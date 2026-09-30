@@ -1,0 +1,313 @@
+:host {
+  all: initial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.widget-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  width: 48px;
+  height: 48px;
+  font-family: 'VT323', monospace;
+
+  /* Retro theme — flat opaque colors + a fixed dark ink outline/shadow,
+     no translucency or blur, to read as pixel-art rather than glassmorphism. */
+  --ink: #1f2937;
+  --pill-bg: #fef08a;
+  --text: #854d0e;
+  --accent: #eab308;
+  --card-bg: #fffbe0;
+}
+
+.widget-container.available {
+  --pill-bg: #bbf7d0;
+  --text: #14532d;
+  --accent: #22c55e;
+  --card-bg: #ecfdf3;
+}
+
+.widget-container.restricted {
+  --pill-bg: #fecaca;
+  --text: #7f1d1d;
+  --accent: #ef4444;
+  --card-bg: #fef1f1;
+}
+
+.widget-container.scanning {
+  --pill-bg: #e5e7eb;
+  --text: #374151;
+  --accent: #9ca3af;
+  --card-bg: #ffffff;
+}
+
+.card {
+  /* Absolutely positioned relative to .widget-container so it never changes
+     the trigger's own box/position — see placement-* modifiers below for
+     which side of the trigger it actually renders on. */
+  position: absolute;
+  width: 250px;
+  padding: 12px;
+  border-radius: 0;
+  background: var(--card-bg);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--ink);
+  image-rendering: pixelated;
+  animation: slide-up 0.15s steps(4) forwards;
+  transition: background 0.2s ease;
+}
+
+.card.placement-up {
+  bottom: calc(100% + 14px);
+}
+
+.card.placement-down {
+  top: calc(100% + 14px);
+}
+
+.card.placement-left {
+  right: 0;
+}
+
+.card.placement-right {
+  left: 0;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+.logo-img {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  object-fit: cover;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: #ffffff;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.close-btn:hover {
+  background: var(--pill-bg);
+}
+
+.close-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.content-body {
+  animation: content-fade 0.15s steps(3) forwards;
+}
+
+@keyframes content-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pixel-loader {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 10px;
+  margin-bottom: 12px;
+}
+
+.pixel-loader span {
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  display: inline-block;
+  opacity: 0.2;
+  animation: pixel-blink 1s steps(1) infinite;
+}
+
+.pixel-loader span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.pixel-loader span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pixel-loader span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.pixel-loader span:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@keyframes pixel-blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9.5px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 12px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 0;
+  background: var(--pill-bg);
+  color: var(--text);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.pill-scanning {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-top-color: transparent;
+  border-radius: 0;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: spin 0.6s steps(8) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.quote {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--ink);
+  background: #ffffff;
+  padding: 10px 12px;
+  border-radius: 0;
+  border: 2px solid var(--ink);
+  border-left: 6px solid var(--accent);
+}
+
+.trigger {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 0;
+  border: 3px solid var(--ink);
+  background-color: var(--card-bg);
+  background-image: none; /* set inline via style prop to the logo asset URL */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.trigger:active {
+  cursor: grabbing;
+}
+
+.trigger:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.status-dot {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 0;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+}

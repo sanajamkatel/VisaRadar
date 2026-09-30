@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "VisaRadar",
+  "version": "1.0.0",
+  "description": "Scans LinkedIn job postings in real time to flag U.S. citizenship requirements, security clearance needs, and visa sponsorship availability.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": "logo.png",
+    "default_title": "VisaRadar"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.linkedin.com/jobs/*"],
+      "js": ["src/content/content.jsx"],
+      "run_at": "document_idle"
+    }
+  ]
+}
