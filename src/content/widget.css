@@ -237,6 +237,14 @@
   word-break: break-word;
 }
 
+.status-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  border: 1.5px solid var(--ink);
+}
+
 .pill-scanning {
   color: var(--text);
   font-weight: 400;

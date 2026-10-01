@@ -1,15 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import logoAssetPath from '../assets/logo.png';
+import { STATUS_ICON_PATHS } from '../lib/statusIcons.js';
 
 // Vite emits an origin-relative path like "/assets/logo-xxxx.png", which the
 // browser would resolve against the HOST PAGE's origin (linkedin.com) since
 // this runs inside a content script — not the extension's own origin. That
 // 404s silently, which is why only the background color showed and not the
 // logo. chrome.runtime.getURL() rewrites it to the correct chrome-extension:// URL.
-const logoUrl =
-  typeof chrome !== 'undefined' && chrome.runtime?.getURL
-    ? chrome.runtime.getURL(logoAssetPath)
-    : logoAssetPath;
+function resolveAssetUrl(path) {
+  return typeof chrome !== 'undefined' && chrome.runtime?.getURL ? chrome.runtime.getURL(path) : path;
+}
+
+const logoUrl = resolveAssetUrl(logoAssetPath);
+
+const STATUS_ICON_URLS = Object.fromEntries(
+  Object.entries(STATUS_ICON_PATHS).map(([key, path]) => [key, resolveAssetUrl(path)])
+);
 
 const POSITION_KEY = 'visaradarWidgetPosition';
 const DRAG_THRESHOLD_PX = 4;
@@ -40,9 +46,14 @@ function getCardPlacement(pos) {
   return { vertical, horizontal };
 }
 
-export default function Widget({ status, result, jobTitle }) {
+export default function Widget({ status, result, jobTitle, registerToggle }) {
   const [pos, setPos] = useState(null); // null = default bottom-right CSS position
   const [isExpanded, setIsExpanded] = useState(false); // always starts as a collapsed floating pill
+  // Separate from isExpanded: this controls whether the widget (trigger +
+  // card) renders at all, toggled by clicking the toolbar icon now that
+  // there's no popup. isExpanded still separately controls collapsed-icon
+  // vs. expanded-card once visible.
+  const [isVisible, setIsVisible] = useState(true);
   const dragRef = useRef(null); // { offsetX, offsetY, startX, startY, moved } while pointer is down
 
   useEffect(() => {
@@ -54,6 +65,14 @@ export default function Widget({ status, result, jobTitle }) {
       // storage unavailable — fall back to default position
     }
   }, []);
+
+  // Exposes an imperative toggle for content.jsx's message listener to call
+  // when the toolbar icon is clicked — re-registered on every render so it
+  // always closes over the current setIsVisible, but that's cheap and the
+  // parent only keeps the latest reference anyway.
+  useEffect(() => {
+    if (registerToggle) registerToggle(() => setIsVisible((v) => !v));
+  });
 
   function handlePointerDown(e) {
     const container = e.currentTarget.closest('.widget-container');
@@ -101,7 +120,7 @@ export default function Widget({ status, result, jobTitle }) {
     }
   }
 
-  if (status === 'idle') return null;
+  if (status === 'idle' || !isVisible) return null;
 
   const isScanning = status === 'scanning';
   const isAvailable = result?.colorClass === 'sponsorship-available';
@@ -121,7 +140,7 @@ export default function Widget({ status, result, jobTitle }) {
               VisaRadar
             </span>
             <button className="close-btn" onClick={() => setIsExpanded(false)} title="Collapse">
-              ✕
+              X
             </button>
           </div>
 
@@ -150,7 +169,9 @@ export default function Widget({ status, result, jobTitle }) {
             ) : (
               <>
                 <div className="pill">
-                  <span>{result.emoji}</span>
+                  {STATUS_ICON_URLS[result.status] && (
+                    <img src={STATUS_ICON_URLS[result.status]} alt="" className="status-icon" />
+                  )}
                   <span>{result.label}</span>
                 </div>
                 <div className="quote">{cleanEvidence(result.evidence)}</div>
